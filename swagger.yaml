@@ -9,7 +9,7 @@ info:
 securityDefinitions:
   myaussie_cookie:
     type: apiKey
-    name: Cookie
+    name: myaussie_cookie
     in: header
 
 paths: 
