@@ -14,7 +14,7 @@ securityDefinitions:
 
 paths: 
   /login:
-    get:
+    post:
       summary: Login to api
       description: Returns you auth / cookie for api usage
       consumes:
