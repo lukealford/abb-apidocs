@@ -1,0 +1,436 @@
+swagger: '2.0'
+host: "myaussie-api.aussiebroadband.com.au"
+schemes:
+  - https
+info:
+  version: '1'
+  title: Aussie Broadband API(unofficial)
+  description: The unofficial api documentation for aussiebroadband api
+securityDefinitions:
+  myaussie_cookie:
+    type: apiKey
+    name: Cookie
+    in: header
+
+paths: 
+  /login:
+    get:
+      summary: Login to api
+      description: Returns you auth / cookie for api usage
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: formData
+          description: your username
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: your account password
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /customer:
+    get:
+      summary: Get customer details
+      description: Returns your customer details
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/customer'
+              
+      security:
+        - myaussie_cookie: []
+  /broadband/{serviceID}/usage:
+    get:
+      summary: Get current usage
+      description: Returns your current month usage
+      parameters:
+        - name: serviceID
+          in: path
+          description: serivce ID
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/usageCurrent'
+              
+      security:
+        - myaussie_cookie: []
+  /broadband/{serviceID}/usage/current:
+   get:
+      summary: Get historical usage
+      description: Returns your hisotrical usage by month
+      parameters:
+        - name: serviceID
+          in: path
+          description: serivce ID
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/historicalUsage'
+      security:
+        - myaussie_cookie: []
+  /broadband/{serviceID}/usage/{month}/{year}:
+   get:
+      summary: Get historical usage
+      description: Returns your hisotrical usage by month
+      parameters:
+        - name: serviceID
+          in: path
+          description: serivce ID
+          required: true
+          type: integer
+        - name: month
+          in: path
+          description: month
+          required: true
+          type: integer
+        - name: year
+          in: path
+          description: year
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/historicalUsage'
+      security:
+        - myaussie_cookie: []
+  /broadband/{serviceID}/outages:
+   get:
+      summary: Get outages
+      description: Returns your current outages on your account
+      parameters:
+        - name: serviceID
+          in: path
+          description: serivce ID
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/outages'
+      security:
+        - myaussie_cookie: []
+  /billing/transactions:
+    get:
+      summary: Get previous transactions
+      description: Returns your previous transactions
+      parameters: 
+        - name: group
+          in: query
+          description: return months in groups
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/transactions'
+      security:
+        - myaussie_cookie: []
+  
+definitions:
+  customer:
+    type: object
+    properties:
+      customer_number:
+        type: integer
+        example: 123456
+      billing_name:
+        type: string
+        example: John Smith
+      billformat:
+        type: integer
+        example: 2
+      brand:
+        type: string
+        example: aussie
+      type: 
+        type: string
+        example: Residential
+      postalAddress:
+        type: object
+        properties:
+          address:
+            type: string
+            example: 181 William St
+          town:
+            type: string
+            example: Melbourne
+          state:
+            type: string
+            example: victoria
+          postcode:
+            type: integer
+            example: 3000
+      communicationPreferences:
+        type: object
+        properties:
+          outages:
+            type: object
+            properties:
+              sms:
+                type: boolean
+              sms247:
+                type: boolean
+              email:
+                type: boolean
+      phone:
+        type: integer
+      email:
+        type: array
+        items: 
+          type: string
+      payment_method:
+        type: string
+        example: "Credit Card"
+      isSuspended:
+        type: boolean
+      accountBalanceCents:
+        type: integer
+      services:
+        type: object
+        properties:
+          NBN:
+            type: array
+            items: 
+              $ref: '#/definitions/service'
+      permissions:
+        type: object
+        properties:
+          createPaymentPlan:
+            type: boolean
+          updatePaymentDetails:
+            type: boolean
+          createContact:
+            type: boolean
+          updateContacts:
+            type: boolean
+          updateCustomer:
+            type: boolean
+          changePassword:
+            type: boolean
+          createTickets:
+            type: boolean
+          makePayment:
+            type: boolean
+          purchaseDatablocksNextBill:
+            type: boolean
+          createOrder:
+            type: boolean
+          viewOrders:
+            type: boolean
+      creditCard:
+        type: object
+        properties:
+          nameOnCard:
+            type: string
+            example: "Mr John Smith"
+          number:
+            type: integer
+            example: "123458...912"
+          expiry:
+            type: string
+            example: '11/20'
+  service:
+      type: object
+      properties:
+        service_id:
+          type: integer
+          example: 123456
+        type:
+          type: string
+          example: NBN
+        name:
+          type: string
+          example: NBN
+        plan:
+          type: string
+          example: "NBN 50Mbps/20Mbps Unlimited ($79.00)"
+        description:
+          type: string
+          example: "181 William St, Melbourne VIC"
+        nbnDetails:
+          type: object
+          properties:
+            product:
+              type: string
+              example: "Fixed Wireless"
+            poiName:
+              type: string
+              example: "Horsham"
+            cvcGraph:
+              type: string
+              example: "https://cvcs.aussiebroadband.com.au/horshamlink1.png"
+        nextBillDate:
+          type: string
+          example: "2019-11-21T13:00:00Z"
+        openDate:
+          type: string
+          example: "2015-07-22"
+        usageAnniversary:
+          type: integer
+          example: 22
+        ipAddresses:
+          type: array
+          items: 
+            type: string
+        address:
+          type: object
+          properties:
+            streetnumber:
+              type: integer
+            streetname:
+              type: string
+            streettype:
+              type: string
+            locality:
+              type: string
+            postcode:
+              type: integer
+            state:
+              type: string
+        contact:
+          type: string
+  usageCurrent:
+    type: object
+    properties:
+      usageMb:
+        type: integer
+        example: 18549
+      downloadedMb:
+        type: integer
+        example: 18549
+      uploadedMb:
+        type: integer
+        example: 18549
+      remainingMb:
+        type: integer
+        example: 500000
+      daysTotal:
+        type: integer
+        example: 31
+      daysRemaining:
+        type: integer
+        example: 30
+      lastUpdate:
+        type: string
+        example: "2019-10-23 00:48:35"
+  historicalUsage:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          type: object
+          properties:
+            date:
+              type: string
+              example: "2019-09-22"
+            download:
+              type: integer
+              example: 18214
+            upload:
+              type: integer
+              example: 18214
+      pagination:
+        type: object
+        properties:
+          prev:
+            type: string
+          next:
+            type: string
+  outages:
+    type: object
+    properties:
+      currentNbnOutages:
+        type: array
+        items:
+          type: object
+      scheduledNbnOutages:
+        type: array
+        items:
+          type: object
+          properties:
+            start_date:
+              type: string
+              example: "2019-10-29T13:00:00Z"
+            end_date:
+              type: string
+              example: "2019-10-29T19:00:00Z"
+            duration:
+              type: number
+              example: 6.0
+      networkEvents:
+        type: array
+        items:
+          $ref:  '#/definitions/outageEntry'
+      aussieOutages:
+        type: object
+        properties:
+            resolved:
+              $ref:  '#/definitions/outageEntry'
+  outageEntry:
+    type: object
+    properties:
+      reference:
+        type: number
+        example: 49940
+      title:
+        type: string
+        example: "Unscheduled Outage"
+      summary:
+        type: string
+        example: "Some services in the affected area may be experiencing connection difficulties. Technicians are investigating. There is currently no ETR."
+      start_time:
+        type: string
+        example: "2019-10-21T05:13:00Z"
+      end_time:
+        type: string
+      restored_at:
+        type: string
+        example: "2019-10-21T07:05:00Z"
+      last_updated:
+        type: string
+        example: "2019-10-21T07:05:00Z"
+  transactions:
+    type: object
+    properties:
+      month:
+        type: array
+        items:
+          $ref: '#/definitions/month'
+  month:
+    type: object
+    properties:
+      id:
+        type: number
+      type:
+        type: string
+        example: "receipt"
+      time:
+        type: string
+        example: "2019-09-23"
+      description:
+        type: string
+        example: "Payment #id Credit Card"
+      amountCents: 
+        type: number
+        example: -2900
+      runningBalanceCents:
+        type: number
+        example: 0
