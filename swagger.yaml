@@ -13,28 +13,28 @@ securityDefinitions:
     in: header
 
 paths: 
-  /login:
-    post:
-      summary: Login to api
-      description: Returns you auth / cookie for api usage
-      consumes:
-        - multipart/form-data
-      produces:
-        - application/json
-      parameters:
-        - name: username
-          in: formData
-          description: your username
-          required: true
-          type: string
-        - name: password
-          in: formData
-          description: your account password
-          required: true
-          type: string
-      responses:
-        200:
-          description: OK
+  # /login:
+  #   post:
+  #     summary: Login to api
+  #     description: Returns you auth / cookie for api usage
+  #     consumes:
+  #       - multipart/form-data
+  #     produces:
+  #       - application/json
+  #     parameters:
+  #       - name: username
+  #         in: formData
+  #         description: your username
+  #         required: true
+  #         type: string
+  #       - name: password
+  #         in: formData
+  #         description: your account password
+  #         required: true
+  #         type: string
+  #     responses:
+  #       200:
+  #         description: OK
   /customer:
     get:
       summary: Get customer details
